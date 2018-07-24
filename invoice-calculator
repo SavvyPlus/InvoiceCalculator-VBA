@@ -1,0 +1,139 @@
+Sub RunCalc()
+
+    Sheet6.Range("A2:T1048576").Clear
+    
+    Dim i As Long
+    'Dim t As Long
+    'Dim m As Long
+    
+    'Dim NMIs As Long
+    'Dim Tariffs As Long
+    
+    Dim Invoice As Long
+    Dim ChargeTypes As Long
+    Dim Month As Long
+    'NMIs = Sheet4.Range("K2").Value
+    'Tariffs = Sheet4.Range("K3").Value
+    
+    Invoice = Sheet4.Range("L2").Value
+    Month = Sheet4.Range("L5").Value
+    ChargeTypes = Sheet4.Range("L4").Value
+    
+    'write start time
+    Sheet7.Range("E3").Value = Now()
+    
+    
+    For i = 1 To Invoice
+        Sheet4.Range("D2").Value = i
+        'For t = 1 To Tariffs
+            'Sheet4.Range("C3").Value = t
+            'For m = 1 To 12
+                'Sheet4.Range("C4").Value = m
+                
+                Application.CalculateFull
+                'Sheet6.Range(Sheet6.Cells(2 + (i - 1) * ChargeTypes * 12 * Tariffs + (t - 1) * 12 * ChargeTypes + (m - 1) * ChargeTypes, 1), Sheet6.Cells(2 + ChargeTypes - 1 + (i - 1) * ChargeTypes * 12 * Tariffs + (t - 1) * 12 * ChargeTypes + (m - 1) * ChargeTypes, 18)).Value = Sheet4.Range("C120:T145").Value
+                
+                Sheet6.Range(Sheet6.Cells(2 + (i - 1) * ChargeTypes, 1), Sheet6.Cells(2 + ChargeTypes - 1 + (i - 1) * ChargeTypes, 18)).Value = Sheet4.Range("D136:U161").Value
+                
+                
+                
+                'Sheet7.Range(Sheet7.Cells(2 + (i - 1) * 12 * Tariffs + (t - 1) * 12 + (m - 1), 1), Sheet7.Cells(2 + (i - 1) * 12 * Tariffs + (t - 1) * 12 + (m - 1), 8)).Value = Sheet4.Range("T76:AA76").Value
+                
+            'Next m
+        'Next t
+    Next i
+    
+    'write end time
+    Sheet7.Range("E4").Value = Now()
+End Sub
+
+Sub SaveRun()
+    Dim RunID As Integer
+    Dim N As Long
+    
+    'On Error GoTo HandleErrors
+    
+    'check if runid already set - may be already saved
+    If Not IsEmpty(Sheet7.Range("E2")) Then
+        MsgBox ("A RunID has already been created. This Run may already have been written to the database")
+        Exit Sub
+    End If
+        
+    'connect to database and check connection
+    Set Conn = New ADODB.Connection
+    Set cmd = New ADODB.Command
+    Set RS = New ADODB.Recordset
+    
+    Conn.ConnectionString = "Provider=SQLOLEDB;Data Source=MEL-LT-001\SQLEXPRESS;Initial Catalog=ApplicationsDB;Trusted_connection=yes;INTEGRATED SECURITY=sspi;"
+    Conn.Open
+        
+    'insert run and return id, populate Control!E2
+    RS.Open Sheet7.Range("E16").Value, Conn
+    RunID = RS.Fields("RunID")
+    Sheet7.Range("E2").Value = RunID
+    
+    'insert rates
+    N = Sheet7.Range("B19").Value
+    For i = 1 To N
+        Sheet7.Range("A19").Value = i
+        'Sheet7.Range("E17").Calculate
+        Conn.Execute (Sheet7.Range("E19").Value)
+        'ExecSQL (sqlcmd = Sheet7.Range("E17").Value)
+    Next i
+    
+    'insert meteragreements
+    N = Sheet7.Range("B18").Value
+    For i = 1 To N
+        Sheet7.Range("A18").Value = i
+        'Sheet7.Range("E17").Calculate
+        Conn.Execute (Sheet7.Range("E18").Value)
+        'ExecSQL (sqlcmd = Sheet7.Range("E17").Value)
+    Next i
+    
+
+    'insert invoice records
+    N = Sheet7.Range("B17").Value
+    For i = 1 To N
+        Sheet7.Range("A17").Value = i
+        'Sheet7.Range("E17").Calculate
+        Conn.Execute (Sheet7.Range("E17").Value)
+        'ExecSQL (sqlcmd = Sheet7.Range("E17").Value)
+    Next i
+    
+    'insert results
+    N = Sheet7.Range("B20").Value
+    For i = 1 To N
+        Sheet7.Range("A20").Value = i
+        'Sheet7.Range("E17").Calculate
+        If Sheet7.Range("D20").Value Then
+            Conn.Execute (Sheet7.Range("E20").Value)
+        End If
+        'ExecSQL (sqlcmd = Sheet7.Range("E17").Value)
+    Next i
+            
+    'update run to mark as complete
+    Conn.Execute (Sheet7.Range("E21").Value)
+    
+ProcExit:
+    Conn.Close
+    'Conn = Nothing
+    'cmd = Nothing
+    'RS.Close
+    'RS = Nothing
+    
+    Exit Sub
+HandleErrors:
+    MsgBox Err.Description
+    Resume ProcExit
+        
+End Sub
+
+Sub ExecSQL(Conn, sqlcmd)
+        'execute sql
+        MsgBox sqlcmd
+        
+        Conn.Execute (sqlcmd)
+        'check result
+        'if error, msgbox and return
+        
+End Sub
