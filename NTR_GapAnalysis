@@ -1,0 +1,40 @@
+Sub GapAnalysis()
+
+    Dim i As Long
+    Dim t As Long
+    Dim r As Long
+    
+    Dim NMIs As Long
+    Dim Tariffs As Long
+    Dim Demand As Long
+    
+    NMIs = Sheet4.Range("K2").Value
+    Tariffs = Sheet4.Range("K3").Value
+    Demand = Sheet4.Range("K5").Value
+    r = 3
+    
+    'For i = 1 To NMIs
+        'For t = 1 To Tariffs
+        
+        For i = 1 To NMIs * Tariffs * Demand
+            
+                'If Sheet9.Cells(3 + (i - 1) * Tariffs + (t - 1), 9).Value = "Possible" And Not Application.WorksheetFunction.IsNA(Sheet9.Cells(3 + (i - 1) * Tariffs + (t - 1), 10).Value) Then
+                '    Sheet9.Range(Sheet9.Cells(r + 1, 14), Sheet9.Cells(r + 1, 17)).Value = Sheet9.Range(Sheet9.Cells(3 + (i - 1) * Tariffs + (t - 1), 7), Sheet9.Cells(3 + (i - 1) * Tariffs + (t - 1), 10)).Value
+                '    Sheet9.Range(Sheet9.Cells(r + 2, 14), Sheet9.Cells(r + 2, 15)).Value = Sheet9.Range(Sheet9.Cells(3 + (i - 1) * Tariffs + (t - 1), 7), Sheet9.Cells(3 + (i - 1) * Tariffs + (t - 1), 8)).Value
+                '    Sheet9.Cells(r + 2, 16).Value = "Current"
+                '    Sheet9.Cells(r + 2, 17).Value = Sheet9.Cells(3 + (i - 1) * Tariffs + (t - 1), 11).Value
+                If Sheet9.Cells(3 + (i - 1), 9).Value = "Possible" And Not Application.WorksheetFunction.IsNA(Sheet9.Cells(3 + (i - 1), 10).Value) Then
+                    Sheet9.Range(Sheet9.Cells(r + 1, 14), Sheet9.Cells(r + 1, 17)).Value = Sheet9.Range(Sheet9.Cells(3 + (i - 1), 7), Sheet9.Cells(3 + (i - 1), 10)).Value
+                    Sheet9.Range(Sheet9.Cells(r + 2, 14), Sheet9.Cells(r + 2, 15)).Value = Sheet9.Range(Sheet9.Cells(3 + (i - 1), 7), Sheet9.Cells(3 + (i - 1), 8)).Value
+                    Sheet9.Cells(r + 2, 16).Value = "Current"
+                    Sheet9.Cells(r + 2, 17).Value = Sheet9.Cells(3 + (i - 1), 11).Value
+                    r = r + 2
+                
+                End If
+            
+        'Next t
+    Next i
+End Sub
+
+
+
