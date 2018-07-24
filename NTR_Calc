@@ -1,0 +1,44 @@
+Sub RunCalc()
+
+    Dim i As Long
+    Dim t As Long
+    Dim m As Long
+    Dim d As Long
+    
+    Dim NMIs As Long
+    Dim Tariffs As Long
+    Dim ChargeTypes As Long
+    Dim Demand As Long
+    
+    NMIs = Sheet4.Range("K2").Value
+    Tariffs = Sheet4.Range("K3").Value
+    ChargeTypes = Sheet4.Range("K4").Value
+    Demand = Sheet4.Range("K5").Value
+    
+    For i = 1 To NMIs
+        Sheet4.Range("C2").Value = i
+        For t = 1 To Tariffs
+            Sheet4.Range("C3").Value = t
+            For d = 1 To Demand
+                Sheet4.Range("C4").Value = d
+            
+                For m = 1 To 12
+                    Sheet4.Range("C5").Value = m
+                    Application.CalculateFull
+                    
+                    If Not Application.WorksheetFunction.IsNA(Sheet4.Range("Q2").Value) Or d = 1 Then
+                    
+                        Sheet6.Range(Sheet6.Cells(2 + (i - 1) * ChargeTypes * 12 * Tariffs * Demand + (t - 1) * 12 * ChargeTypes * Demand + (d - 1) * 12 * ChargeTypes + (m - 1) * ChargeTypes, 2), Sheet6.Cells(2 + ChargeTypes - 1 + (i - 1) * ChargeTypes * 12 * Tariffs * Demand + (t - 1) * 12 * ChargeTypes * Demand + (d - 1) * 12 * ChargeTypes + (m - 1) * ChargeTypes, 34)).Value = Sheet4.Range("D82:AJ92").Value
+                        
+                        Sheet7.Range(Sheet7.Cells(2 + (i - 1) * 12 * Tariffs * Demand + (t - 1) * 12 * Demand + (d - 1) * 12 + (m - 1), 1), Sheet7.Cells(2 + (i - 1) * 12 * Tariffs * Demand + (t - 1) * 12 * Demand + (d - 1) * 12 + (m - 1), 9)).Value = Sheet4.Range("C77:K77").Value
+                    
+                    End If
+                    
+                Next m
+            
+            Next d
+        Next t
+    Next i
+End Sub
+
+
